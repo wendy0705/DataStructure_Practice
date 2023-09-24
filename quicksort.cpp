@@ -3,47 +3,51 @@
 
 using namespace std;
 
+void swap(int& a, int& b) {
+    int temp = a;
+    a = b;
+    b = temp;
+}
+
 // 快速排序分区函数，返回分区后的基准元素位置
-int partition(vector<int>& arr, int low, int high) {
-    int pivot = arr[low]; // 选择第一个元素作为 pivot
-    int i = low - 1;      // 初始化 i
-    int j = high + 1;     // 初始化 j
-
-    while (true) {
-        // 从左向右找到大于等于 pivot 的元素
-        do {
-            i++;
-        } while (arr[i] < pivot);
-
-        // 从右向左找到小于等于 pivot 的元素
-        do {
-            j--;
-        } while (arr[j] > pivot);
-
-        // 如果 i 和 j 相遇或交叉，结束分区
-        if (i >= j) {
-            return j;
-        }
-
-        // 交换 arr[i] 和 arr[j]
-        swap(arr[i], arr[j]);
-    }
-}
-
-// 快速排序主函数
 void quickSort(vector<int>& arr, int low, int high) {
+    
     if (low < high) {
-        // 分区
-        int pivotIndex = partition(arr, low, high);
+        int pivot = arr[low]; // 要注意這個pivot不能用來跟其他array值換位置，因為記憶體位址不同
+        int i = low;      // 初始化 i = array的第一位址
+        int j = high + 1;     // 初始化 j = 超出array的位址
+        int n = arr.size();
 
-        // 递归对左侧和右侧子数组进行排序
-        quickSort(arr, low, pivotIndex);
-        quickSort(arr, pivotIndex + 1, high);
+        while(j > i){
+            do {
+                i++;  //從array的第二位址開始比較
+            } while (arr[i] < pivot);
+
+            do {
+                j--;  //從array的最後一個位址開始比較
+            } while (arr[j] > pivot);
+
+            // 這裡是i, j都停下來的時候互換，加上條件是因為會有在經過上面兩個迴圈後，j < i的情形(可能i會超過array
+            // 本身蠻多的，但不影響結果)，這樣不僅不執行i,j互換，且會跳出這個比較迴圈。
+            if (j > i){
+                swap(arr[i], arr[j]);
+            }
+        };
+
+        //j < i 後，arr[j]與arr[low](也就是那段array的pivot)互換 
+        swap(arr[j], arr[low]);
+        for (int k = 0; k < n; k++) {
+            cout << arr[k] << " ";
+        }
+        cout << endl;
+        quickSort(arr, low, j - 1);
+        quickSort(arr, j + 1, high);
     }
 }
+
 
 int main() {
-    vector<int> arr = {12, 4, 5, 6, 7, 3, 1, 15, 8, 2, 9};
+    vector<int> arr = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
     int n = arr.size();
 
     cout << "original:" << endl;
